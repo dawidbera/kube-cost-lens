@@ -1,0 +1,7 @@
+{
+  "provider": "Custom Cloud / On-Premise",
+  "currency": "USD",
+  "cpuRatePerHour": 0.0450,
+  "memoryRatePerGbHour": 0.0060,
+  "hoursPerMonth": 730
+}
