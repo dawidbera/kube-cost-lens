@@ -1,0 +1,52 @@
+# .golangci.yml - Configuration for golangci-lint
+# Defines code quality rules, active linters, and analysis boundaries for kube-cost-lens.
+
+run:
+  # Timeout for analysis execution
+  timeout: 5m
+  # Include test files in linting analysis
+  tests: true
+
+linters:
+  enable:
+    # Check for unhandled errors
+    - errcheck
+    # Examine Go source code and report suspicious constructs
+    - govet
+    # Static analysis tool providing diagnostics and recommendations
+    - staticcheck
+    # Fast, configurable, extensible linter for Go
+    - revive
+    # Inspect source code for security problems
+    - gosec
+    # Detect ineffectual assignments
+    - ineffassign
+    # Report unused code
+    - unused
+    # Check for unneeded type conversions
+    - unconvert
+    # Check style and formatting
+    - misspell
+
+linters-settings:
+  govet:
+    # Check for shadow variables
+    check-shadowing: true
+  revive:
+    # Rule configuration for revive
+    rules:
+      - name: exported
+        arguments:
+          - checkPrivateReceivers
+  gosec:
+    # Suppress low severity warnings in test code
+    severity: medium
+    confidence: medium
+
+issues:
+  # Exclude typical false positives in unit test code
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+        - errcheck
