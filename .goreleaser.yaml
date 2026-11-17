@@ -1,0 +1,50 @@
+# .goreleaser.yaml - Multi-architecture cross-compilation release configuration
+# Builds release binaries and archives for Linux and macOS (amd64 and arm64).
+
+version: 2
+
+project_name: kube-cost-lens
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kube-cost-lens
+    main: ./main.go
+    binary: kube-cost-lens
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/dawidbera/kube-cost-lens/cmd.Version={{.Version}}
+      - -X github.com/dawidbera/kube-cost-lens/cmd.GitCommit={{.ShortCommit}}
+      - -X github.com/dawidbera/kube-cost-lens/cmd.BuildDate={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE*
+      - assets/sample-pricing.json
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

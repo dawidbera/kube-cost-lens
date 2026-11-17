@@ -1,0 +1,43 @@
+# Continuous Integration Workflow for kube-cost-lens
+# Executes automated builds, lint checks, race-detector unit tests, and cross-compilation verification.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+          cache: true
+
+      - name: Verify Module Dependencies
+        run: go mod verify
+
+      - name: Run Go Vet
+        run: go vet ./...
+
+      - name: Run Unit Tests with Race Detector
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Compile Application Binary
+        run: make build
+
+      - name: Verify CLI Help and Version Execution
+        run: |
+          ./bin/kube-cost-lens version
+          ./bin/kube-cost-lens --help
